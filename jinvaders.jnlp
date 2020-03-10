@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp codebase="http://jinvaders.sourceforge.net/webstart" href="jinvaders.jnlp">
+  <information>
+    <title>JInvaders</title>
+    <vendor>opensourcearcade.org</vendor>
+    <homepage href="http://www.opensourcearcade.org"/>
+    <description>Arcade game clone</description>
+    <icon href="res/jinvaders.png"/>
+    <offline-allowed/>
+        <shortcut>
+	<!-- put a shortcut on the desktop -->
+	<desktop/>
+        </shortcut>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se href="http://java.sun.com/products/autodl/j2se" version="1.5+" max-heap-size="128m"/>
+    <jar href="jinvaders.jar"/>
+  </resources>
+  <application-desc/>
+</jnlp>
+

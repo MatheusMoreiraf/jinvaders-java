@@ -1,0 +1,75 @@
+Version 1.4
+- Solved: Set GAMEOVER state, when aliens hit ground, but player lives left.
+- Refactored: Splitted drawIngameScreen() into drawIngameScreen() and drawGameOverScreen(), adapted draw() routine.
+- Refactored: Matched sound names with ending 'Snd'.
+
+Version 1.5
+- Changed the applet to set its size by itself, not by html-given parameters
+- Switched from JApplet to Applet: Thread loop calls repaint() -> update() -> paint()
+- Revisited start() and stop() to end the VM
+- Fixed: Ufo sound stops playing when browser tab loses focus
+
+Version 1.6
+- Created and tested postscore.php and highscore.php on the website
+- Created and tested HighScores class to game
+- Created and tested Name-Input-Screen to game
+- Fixed: Ufo can't be hit again while exploding (all collision checks now fixed)
+
+Version 1.7
+- Made applet aware of losing focus: Pause game, stop all sound, display "click me" for focus
+- Implemented 'sound off' feature by pressing 'S'
+- Nasty bug since 1.5: Aliens also need collision check when frame==1 !!
+- Only ask for Username when game has ended
+
+Version 1.8
+- Server highscore were not enabled
+- Server transmitted highscore was always zero (resetGame was called before)
+- Really zero highscore was sent to server (now only greater zero)
+
+Version 1.9
+- Alien shot frequency raises with every wave
+- All frequently used Strings are now constants
+
+Version 1.91
+- Shooting key changed to CTRL, blocked auto-fire (block key-repeat)
+
+Version 1.92
+- Failing to retrieve HighScores from server does not lock the game anymore
+
+Version 1.93
+- Changed game class to type java.awt.Panel to make it multi-purpose (Applet, JFrame)
+- Added GameApplet and GameApplication for Website and Standalone distribution
+
+Version 1.94
+- Optimized GameApplet and GameApplication, Game is no longer a Panel (reducing its heap size)
+
+Version 1.95
+- Fixed GameApplication (System.nanoTime instead of System.getMillis)
+- Created bash script to run application
+
+Version 1.96
+- Fixed Highscore List to work offline with Application and Applet
+
+Version 1.97
+- Code optimizations: Singletons, encapsulating instead of extending, etc.pp.
+
+Version 1.98 
+- Added "Click here" message to user (at program start) when application/applet has no input focus
+- Implemented 4-tone march sound
+
+Version 1.99
+- Added keyboard shortcuts an splash screen
+- Fixed bouncing detection bug (now always checking using the biggest aliens, even if not visible)
+
+Version 2.0
+- Merged Application and Applet into main Game class
+- Replaced all sounds by self-generated ones
+- Added JNLP
+
+Version 2.1
+- Highscore now saved
+- Fixed highscore bug where player2 score and highscore where flipped
+- Highscore screen now directly shown after name input
+
+Version 2.2
+- Sound system reverted back to Applet.newAudioClip() because of clipping problems with Windows

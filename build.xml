@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<project name="jinvaders" default="build" basedir=".">
+    
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir" value="${build.dir}/jar"/>
+    <property name="main-class" value="${ant.project.name}"/>
+    <property name="lib.dir" value="../libs"/>
+
+	<!--
+	<path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+    -->
+	
+	<target name="clean">
+        <delete dir="${build.dir}" failonerror="false"/>
+    </target>
+    
+    <target name="build" depends="clean">
+        <mkdir dir="${build.dir}/classes"/>
+        <javac source="1.5" target="1.5" srcdir="${src.dir}" destdir="${build.dir}/classes"/> <!-- classpathref="classpath"/> -->
+    	<zipfileset src="~/workspace/libs/external.jar" />
+        <jar destfile="${ant.project.name}.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.opensourcearcade.jinvaders.Game"/>
+            </manifest>
+         <fileset dir="${basedir}/build/classes/" />
+         <fileset dir="${basedir}" includes="res/" />
+        </jar>
+    </target>
+    
+    <target name="runApplication" depends="build">
+        <java jar="${ant.project.name}.jar" fork="true"/>
+    </target>
+    
+	<target name="runApplet" depends="build">
+	     <exec dir="." executable="appletviewer">
+	       <arg value="${basedir}/index.html" />
+	     </exec>
+	</target>
+	
+	<target name="checksw_path" depends="if_windows, if_unix"/>
+	
+	<target name="checkos">
+		<condition property="isWindows">
+			<os family="windows" />
+		</condition>
+
+		<condition property="isLinux">
+			<os family="unix" />
+		</condition>
+	</target>
+
+	<target name="if_windows" depends="checkos" if="isWindows">
+		<property name="proguard.root" value="c:\Program Files\proguard" />
+		<echo message="proguard.root = ${proguard.root}"/>
+		<taskdef resource="proguard/ant/task.properties"
+			classpath="/usr/share/java/ant-proguard.jar" />
+	</target>
+
+	<target name="if_unix" depends="checkos" if="isLinux">
+		<property name="proguard.root" value="/usr/share/java" />
+		<echo message="proguard.root = ${proguard.root}"/>
+		<taskdef resource="proguard/ant/task.properties"
+			classpath="${proguard.root}/proguard.jar" />
+	</target>
+	
+	<target name="obfuscate" depends="checksw_path,build">
+		<proguard>
+			-libraryjars "${java.home}/lib/rt.jar"
+			-injars      ${ant.project.name}.jar
+			-outjars     ${ant.project.name}O.jar
+			-keep public class org.opensourcearcade.jinvaders.Game
+			-overloadaggressively
+		</proguard>
+	</target>
+</project>
