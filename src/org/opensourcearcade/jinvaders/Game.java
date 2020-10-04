@@ -207,6 +207,8 @@ public final class Game extends Applet implements Runnable {
 
 		backbuffer = ToolBox.convertToCompatibleImage(new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB));
 		g2d = backbuffer.createGraphics();
+		Color cordeFundo = new Color(28,28,28);
+		g2d.setBackground(cordeFundo);
 
 		playerName1 = "PLAYER1";
 		playerName2 = "PLAYER2";
