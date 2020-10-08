@@ -34,10 +34,6 @@ public final class Game extends Applet implements Runnable {
     public static final int HEIGHT = 480;
     public static final int FRAMES_PER_SECOND = 30;
 
-    public static enum GameStates {
-        SPLASH_SCREEN, HELP_SCREEN, HIGH_SCORE_SCREEN, GAME_OVER_SCREEN, IN_GAME_SCREEN, INPUT_NAME_SCREEN
-    }
-
     private GameStates gameState = GameStates.SPLASH_SCREEN;
 
     private static final int LIVES = 3;
@@ -61,8 +57,6 @@ public final class Game extends Applet implements Runnable {
     private Entity[][] bunkers = new Entity[4][20];
 
     private boolean paused;
-    private boolean leftKey, rightKey, spaceKey, escKey, enterKey, backKey;
-    private boolean spaceKeyReleased = true;
 
     private String playerName1, playerName2, tmpPlayerName;
     private int caretPos;
@@ -78,8 +72,6 @@ public final class Game extends Applet implements Runnable {
 
     private Font font;
 
-    private int lastKey;
-
     private Panel panel;
 
     private Thread gameLoopThread;
@@ -88,6 +80,7 @@ public final class Game extends Applet implements Runnable {
     private static Texts TEXTS = new Texts();
     private static Speeds SPEEDS = new Speeds();
     private Imagens imagens = new Imagens();
+    private Keyboard keyboard = new Keyboard();
 
     public static void main(String[] args) {
 
@@ -138,11 +131,11 @@ public final class Game extends Applet implements Runnable {
         panel.setPreferredSize(new Dimension(Game.WIDTH, Game.HEIGHT));
         panel.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
-                keyEvent(event, true);
+                keyboard.keyEvent(event, true);
             }
 
             public void keyReleased(KeyEvent event) {
-                keyEvent(event, false);
+                keyboard.keyEvent(event, false);
             }
         });
 
@@ -230,8 +223,8 @@ public final class Game extends Applet implements Runnable {
                 updateInputNameScreen(time);
                 break;
             case GAME_OVER_SCREEN:
-                if (enterKey) {
-                    enterKey = false;
+                if (keyboard.isEnterKey()) {
+                    keyboard.setEnterKey(false);
                     if (score1 > 0)
                         gameState = GameStates.INPUT_NAME_SCREEN;
                     else
@@ -244,8 +237,8 @@ public final class Game extends Applet implements Runnable {
 
         // state-independent updates
 
-        if (lastKey == KeyEvent.VK_S) {
-            lastKey = 0;
+        if (keyboard.getLastKey() == KeyEvent.VK_S) {
+            keyboard.setLastKey(0);
             boolean enabled = !Sound.isEnabled();
             Sound.setEnabled(enabled);
             if (enabled && ufo.visible && ufo.frame == 0)
@@ -254,8 +247,8 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateSplashScreen(long time) {
-        if (enterKey) {
-            enterKey = false;
+        if (keyboard.isEnterKey()) {
+            keyboard.setEnterKey(false);
             resetGame();
             gameState = GameStates.IN_GAME_SCREEN;
             return;
@@ -270,8 +263,8 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateHelpScreen(long time) {
-        if (enterKey) {
-            enterKey = false;
+        if (keyboard.isEnterKey()) {
+            keyboard.setEnterKey(false);
             resetGame();
             gameState = GameStates.IN_GAME_SCREEN;
             return;
@@ -286,8 +279,8 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateHighScoreScreen(long time) {
-        if (enterKey) {
-            enterKey = false;
+        if (keyboard.isEnterKey()) {
+            keyboard.setEnterKey(false);
             resetGame();
             gameState = GameStates.IN_GAME_SCREEN;
             return;
@@ -304,8 +297,8 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateInGameScreen(long time) {
-        if (escKey) {
-            escKey = false;
+        if (keyboard.isEnterKey()) {
+            keyboard.setEnterKey(false);
             resetGame();
             gameState = GameStates.SPLASH_SCREEN;
             return;
@@ -344,8 +337,8 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateInputNameScreen(long time) {
-        if (enterKey) {
-            enterKey = false;
+        if (keyboard.isEnterKey()) {
+            keyboard.setEnterKey(false);
             if (tmpPlayerName.isEmpty())
                 tmpPlayerName = playerName1;
 
@@ -354,7 +347,7 @@ public final class Game extends Applet implements Runnable {
             highScores.postHighScore(playerName1, score1);
 
             gameState = GameStates.HIGH_SCORE_SCREEN;
-        } else if (backKey) {
+        } else if (keyboard.isBackKey()) {
             if (caretPos > 0) {
                 caretPos--;
                 if (caretPos > 0)
@@ -362,24 +355,24 @@ public final class Game extends Applet implements Runnable {
                 else
                     tmpPlayerName = "";
             }
-            backKey = false;
-        } else if (lastKey != 0) {
+            keyboard.setBackKey(false);
+        } else if (keyboard.getLastKey() != 0) {
             if (caretPos < 8) {
                 int strLen = tmpPlayerName.length();
                 String s1 = (caretPos > 0) ? tmpPlayerName.substring(0, caretPos) : "";
                 String s2 = (caretPos < strLen) ? tmpPlayerName.substring(caretPos + 1, strLen - 1) : "";
-                tmpPlayerName = s1 + KeyEvent.getKeyText(lastKey) + s2;
+                tmpPlayerName = s1 + KeyEvent.getKeyText(keyboard.getLastKey()) + s2;
                 caretPos++;
             }
-            lastKey = 0;
+            keyboard.setLastKey(0);
         }
     }
 
     private void updateShooting(long time) {
 
         Entity shot;
-        if (spaceKey && spaceKeyReleased && !playerShot.visible && player.frame == 0) {
-            spaceKeyReleased = false;
+        if (keyboard.isSpaceKey() && keyboard.isSpaceKeyReleased() && !playerShot.visible && player.frame == 0) {
+            keyboard.setSpaceKeyReleased(false);
             long t = System.nanoTime();
             if (t - lastShotTime > 300000) {
                 lastShotTime = t;
@@ -424,7 +417,6 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateExplosions(long time) {
-
         // player exploding ?
         if (player.frame != 0) {
             player.cntDown -= 1000 / FRAMES_PER_SECOND;
@@ -568,9 +560,9 @@ public final class Game extends Applet implements Runnable {
         // --- player ---
         if (player.frame == 0) {
             float delta = player.sx * (time / 1000000000.0f);
-            if (leftKey)
+            if (keyboard.isLeftKey())
                 player.dx = -delta;
-            else if (rightKey)
+            else if (keyboard.isRightKey())
                 player.dx = delta;
             else
                 player.dx = 0;
@@ -1030,37 +1022,7 @@ public final class Game extends Applet implements Runnable {
         }
     }
 
-    public void keyEvent(KeyEvent event, boolean pressed) {
-        int keyCode = event.getKeyCode();
-        switch (keyCode) {
-            case KeyEvent.VK_LEFT:
-                leftKey = pressed;
-                break;
-            case KeyEvent.VK_RIGHT:
-                rightKey = pressed;
-                break;
-            case KeyEvent.VK_SPACE:
-                spaceKey = pressed;
-                if (!pressed)
-                    spaceKeyReleased = true;
-                break;
-            case KeyEvent.VK_ESCAPE:
-                escKey = pressed;
-                break;
-            case KeyEvent.VK_ENTER:
-                enterKey = pressed;
-                break;
-            case KeyEvent.VK_BACK_SPACE:
-                backKey = pressed;
-                break;
-            default:
-                char c = event.getKeyChar();
-                if (pressed && lastKey != keyCode)
-                    if ((c > 47 && c < 91) || (c > 96 && c < 123))
-                        lastKey = keyCode;
-                break;
-        }
-    }
+
 
     public void resume() {
         paused = false;
