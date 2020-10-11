@@ -4,7 +4,10 @@ import org.opensourcearcade.jinvaders.Sound.SOUNDS;
 
 import java.applet.Applet;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -33,6 +36,8 @@ public final class Game extends Applet implements Runnable {
     public static final int WIDTH = 449;
     public static final int HEIGHT = 480;
     public static final int FRAMES_PER_SECOND = 30;
+    public static final Entity[][] ALIENS = new Entity[5][11];
+    public static final Entity[][] BUNKERS = new Entity[4][20];
 
     private GameStates gameState = GameStates.SPLASH_SCREEN;
 
@@ -46,8 +51,6 @@ public final class Game extends Applet implements Runnable {
     private Graphics2D g2d;
 
     private Entity player, ufo, playerShot, alienShot;
-    private Entity[][] aliens = new Entity[5][11];
-    private Entity[][] bunkers = new Entity[4][20];
 
     private boolean paused;
 
@@ -65,56 +68,14 @@ public final class Game extends Applet implements Runnable {
 
     private Font font;
 
-    private Panel panel;
+    private final Panel panel;
 
     private Thread gameLoopThread;
     private long lastUpdate;
 
-    private static Texts TEXTS = new Texts();
-    private static Speeds SPEEDS = new Speeds();
-    private Imagens imagens = new Imagens();
-    private Keyboard keyboard = new Keyboard();
-
-    public static void main(String[] args) {
-
-        try {
-
-            // fix the JNLP desktop icon exec rights bug (Linux only)
-            if (System.getProperty("os.name").toLowerCase().indexOf("linux") != -1) {
-                java.io.File desktop = new java.io.File(System.getProperty("user.home") + "/Desktop");
-                if (desktop.exists()) {
-                    // TODO filter files for "jinvaders" and ".desktop" extension
-                    java.io.File[] files = desktop.listFiles();
-                    for (java.io.File file : files) {
-                        if (file.getName().contains("jws_app_shortcut_")) {
-                            file.setExecutable(true, false);
-                        }
-                    }
-                }
-            }
-
-            Game game = new Game();
-            String name = ToolBox.getPackageName();
-            Image iconImg = ToolBox.loadImage(ToolBox.getURL(name + ".png"));
-
-            Frame frame = new Frame(name);
-            frame.setIconImage(iconImg);
-            frame.setLayout(new BorderLayout());
-            frame.add(game.getPanel(), BorderLayout.CENTER);
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            frame.setVisible(true);
-
-            game.init();
-        } catch (Exception e) {
-            System.err.println(e.getLocalizedMessage());
-        }
-    }
+    private final Imagens imagens = new Imagens();
+    private final Keyboard keyboard = new Keyboard();
+    private final Help help = new Help();
 
     public Game() {
         System.out.println(System.getProperty("java.vm.name") + System.getProperty("java.vm.version"));
@@ -312,9 +273,9 @@ public final class Game extends Applet implements Runnable {
             if (alienCtr == 0) {
                 // create new wave
                 int dx = imagens.getE1Img().getWidth() / 3 + 4;
-                for (int y = 0; y < aliens.length; y++)
-                    for (int x = 0; x < aliens[y].length; x++) {
-                        Entity alien = aliens[y][x];
+                for (int y = 0; y < ALIENS.length; y++)
+                    for (int x = 0; x < ALIENS[y].length; x++) {
+                        Entity alien = ALIENS[y][x];
                         alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
                         alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
                         alien.frame = 0;
@@ -322,7 +283,7 @@ public final class Game extends Applet implements Runnable {
                     }
 
                 // reset alien data
-                alienCtr = aliens.length * aliens[0].length;
+                alienCtr = ALIENS.length * ALIENS[0].length;
                 --alienSX;
                 shot_freq = (long) (0.9f * (float) shot_freq);
             }
@@ -375,7 +336,7 @@ public final class Game extends Applet implements Runnable {
                 playerShot.y = player.y - 10;
                 playerShot.w = 2;
                 playerShot.h = 8;
-                playerShot.sy = -(Math.round(10.0f * (float) SPEEDS.getPlayerShotSpeed() / (float) FRAMES_PER_SECOND)) / 10.0f;
+                playerShot.sy = -(Math.round(10.0f * (float) Speeds.getPlayerShotSpeed() / (float) FRAMES_PER_SECOND)) / 10.0f;
             }
         }
 
@@ -383,10 +344,10 @@ public final class Game extends Applet implements Runnable {
         if (shootCtr > shot_freq) {
             Entity shooter = null;
             while (shooter == null) {
-                int x = (int) (Math.random() * aliens[0].length);
-                for (int y = aliens.length - 1; y >= 0; y--)
-                    if (aliens[y][x].visible) {
-                        shooter = aliens[y][x];
+                int x = (int) (Math.random() * ALIENS[0].length);
+                for (int y = ALIENS.length - 1; y >= 0; y--)
+                    if (ALIENS[y][x].visible) {
+                        shooter = ALIENS[y][x];
                         break;
                     }
             }
@@ -396,7 +357,7 @@ public final class Game extends Applet implements Runnable {
             shot.y = shooter.y + shooter.h;
             shot.w = 2;
             shot.h = 8;
-            shot.sy = (Math.round(10.0f * (float) SPEEDS.getAlienShotSpeed() / (float) FRAMES_PER_SECOND)) / 10.0f;
+            shot.sy = (Math.round(10.0f * (float) Speeds.getAlienShotSpeed() / (float) FRAMES_PER_SECOND)) / 10.0f;
 
             if (alienShot == null)
                 alienShot = shot;
@@ -436,9 +397,9 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateCollisions(long time) {
-        for (int y = 0; y < aliens.length && gameState == GameStates.IN_GAME_SCREEN; y++)
-            for (int x = 0; x < aliens[y].length && gameState == GameStates.IN_GAME_SCREEN; x++) {
-                Entity alien = aliens[y][x];
+        for (int y = 0; y < ALIENS.length && gameState == GameStates.IN_GAME_SCREEN; y++)
+            for (int x = 0; x < ALIENS[y].length && gameState == GameStates.IN_GAME_SCREEN; x++) {
+                Entity alien = ALIENS[y][x];
                 if (alien.visible && alien.frame < 2) {
                     // alien ./. playershot
                     if (playerShot.visible && ToolBox.checkCollision(playerShot, alien)) {
@@ -474,10 +435,10 @@ public final class Game extends Applet implements Runnable {
                         continue;
                     } else {
                         // alien ./. bunker
-                        for (int b = 0; b < bunkers.length; b++)
+                        for (int b = 0; b < BUNKERS.length; b++)
                             for (int yy = 0; yy < 4; yy++)
                                 for (int xx = 0; xx < 5; xx++) {
-                                    Entity bk = bunkers[b][yy * 5 + xx];
+                                    Entity bk = BUNKERS[b][yy * 5 + xx];
                                     if (bk.visible && ToolBox.checkCollision(alien, bk)) {
                                         bk.visible = false;
                                         Sound.play(SOUNDS.BASE_HIT);
@@ -518,10 +479,10 @@ public final class Game extends Applet implements Runnable {
 
             // bunker collision checks
             boolean bnkHit = false;
-            for (int b = 0; b < bunkers.length && !bnkHit; b++)
+            for (int b = 0; b < BUNKERS.length && !bnkHit; b++)
                 for (int yy = 0; yy < 4 && !bnkHit; yy++)
                     for (int xx = 0; xx < 5 && !bnkHit; xx++) {
-                        Entity bnk = bunkers[b][yy * 5 + xx];
+                        Entity bnk = BUNKERS[b][yy * 5 + xx];
                         if (bnk.visible) {
                             // alienShot ./. bunker
                             if (shot.visible && ToolBox.checkCollision(shot, bnk)) {
@@ -586,7 +547,7 @@ public final class Game extends Applet implements Runnable {
         }
 
         // --- aliens ---
-        float alienDelta = 2 * (float) alienSX * (time / 1000000000.0f); // pixels
+        float alienDelta = 2 * alienSX * (time / 1000000000.0f); // pixels
         // to
         // move
         alienDelta /= (float) (alienCtr + 4); // speed modifier for killed
@@ -596,29 +557,14 @@ public final class Game extends Applet implements Runnable {
         if (!bounce) // not bouncing, move aliens sidewards
         {
             float alienMaxY = 0, alienY = 0;
-            for (int y = 0; y < aliens.length; y++)
-                for (int x = 0; x < aliens[y].length; x++) {
-                    Entity alien = aliens[y][x]; // do *not* check for
-                    // visibility (bouncing
-                    // test!)
-                    alien.x += alienDelta;
-                    alienY = alien.y + alien.image.getHeight(null);
-                    alienMaxY = (alienY > alienMaxY) ? alienY : alienMaxY;
-                }
+
+            help.alinesMovement( alienDelta, alienY, alienMaxY, true);
         } else // bouncing, move aliens downwards
         {
             float alienMaxY = 0, alienY = 0;
             alienSX = (bounce) ? -alienSX : alienSX;
 
-            for (int y = 0; y < aliens.length; y++)
-                for (int x = 0; x < aliens[y].length; x++) {
-                    Entity alien = aliens[y][x]; // do *not* check for
-                    // visibility (bouncing
-                    // test!)
-                    alien.y += 10;
-                    alienY = alien.y + alien.image.getHeight(null);
-                    alienMaxY = (alienY > alienMaxY) ? alienY : alienMaxY;
-                }
+            help.alinesMovement( 10, alienY, alienMaxY, false);
 
             // aliens hit ground ?
             if (alienMaxY >= Pos.BOTTOM_LINE_POS - 1) {
@@ -656,34 +602,14 @@ public final class Game extends Applet implements Runnable {
         // (broadest alien is always in last alien row)
         Entity alienToCheck = null;
         if (alienSX > 0)
-            alienToCheck = aliens[aliens.length - 1][getMostRightColumn()];
+            alienToCheck = ALIENS[ALIENS.length - 1][help.getMostColumn("Right")];
         else
-            alienToCheck = aliens[aliens.length - 1][getMostLeftColumn()];
+            alienToCheck = ALIENS[ALIENS.length - 1][help.getMostColumn("Left")];
 
         // check if updated position bounces screen
         float newXpos = alienToCheck.x + alienDelta;
 
         return ((int) newXpos < 0 || (int) newXpos > WIDTH - alienToCheck.w);
-    }
-
-    private int getMostLeftColumn() {
-        // get the most left alien (which is alive)
-        int column = Integer.MAX_VALUE;
-        for (int y = 0; y < aliens.length; y++)
-            for (int x = 0; x < aliens[y].length; x++)
-                if (aliens[y][x].visible)
-                    column = Math.min(column, x);
-        return column;
-    }
-
-    private int getMostRightColumn() {
-        // get the most right alien (which is alive)
-        int column = Integer.MIN_VALUE;
-        for (int y = 0; y < aliens.length; y++)
-            for (int x = 0; x < aliens[y].length; x++)
-                if (aliens[y][x].visible)
-                    column = Math.max(column, x);
-        return column;
     }
 
     public void paint() {
@@ -703,7 +629,7 @@ public final class Game extends Applet implements Runnable {
 
         int names_height = (int) (fontHeight * 1.5);
         ToolBox.drawText(g2d, playerName1, WIDTH / 6, names_height, Color.white);
-        ToolBox.drawText(g2d, TEXTS.getStrHiscore(), names_height, Color.white);
+        ToolBox.drawText(g2d, Texts.getStrHiscore(), names_height, Color.white);
         ToolBox.drawText(g2d, playerName2, WIDTH / 6 * 5, names_height, Color.white);
 
         int score_height = fontHeight * 3;
@@ -745,35 +671,35 @@ public final class Game extends Applet implements Runnable {
 
     private void drawSplashScreen(Graphics g, int height) {
         if (frameCtr < 250) {
-            ToolBox.drawText(g, TEXTS.getPlayInvaders()[0], 6 * height, Color.white);
-            ToolBox.drawText(g, TEXTS.getPlayInvaders()[1], 8 * height, Color.white);
-            ToolBox.drawText(g, TEXTS.getPlayInvaders()[2], 10 * height, Color.white);
+            ToolBox.drawText(g, Texts.getPlayInvaders()[0], 6 * height, Color.white);
+            ToolBox.drawText(g, Texts.getPlayInvaders()[1], 8 * height, Color.white);
+            ToolBox.drawText(g, Texts.getPlayInvaders()[2], 10 * height, Color.white);
         }
 
         final int X = 125;
 
-        ToolBox.drawText(g, TEXTS.getSplashScoreTable()[0], WIDTH / 2, 12 * height, Color.white);
+        ToolBox.drawText(g, Texts.getSplashScoreTable()[0], WIDTH / 2, 12 * height, Color.white);
 
-        ToolBox.drawText(g, TEXTS.getSplashScoreTable()[1], WIDTH / 2, (int) (14 * height), Color.white);
+        ToolBox.drawText(g, Texts.getSplashScoreTable()[1], WIDTH / 2, 14 * height, Color.white);
         ToolBox.drawImageCentered(g, imagens.getUfoImg(), X, 13 * height, 0);
 
-        ToolBox.drawText(g, TEXTS.getSplashScoreTable()[2], WIDTH / 2, (int) (15.5 * height), Color.white);
+        ToolBox.drawText(g, Texts.getSplashScoreTable()[2], WIDTH / 2, (int) (15.5 * height), Color.white);
         ToolBox.drawImageCentered(g, imagens.getE3Img(), X, (int) (14.5 * height), 0);
 
-        ToolBox.drawText(g, TEXTS.getSplashScoreTable()[3], WIDTH / 2, (int) (17 * height), Color.white);
+        ToolBox.drawText(g, Texts.getSplashScoreTable()[3], WIDTH / 2, 17 * height, Color.white);
         ToolBox.drawImageCentered(g, imagens.getE2Img(), X, 16 * height, 0);
 
-        ToolBox.drawText(g, TEXTS.getSplashScoreTable()[4], WIDTH / 2, (int) (18.5 * height), Color.green);
+        ToolBox.drawText(g, Texts.getSplashScoreTable()[4], WIDTH / 2, (int) (18.5 * height), Color.green);
         ToolBox.drawImageCentered(g, imagens.getE1Img(), X, (int) (17.5 * height), 0);
     }
 
     private void drawHelpScreen(Graphics g, int fontHeight) {
-        for (int i = 0; i < TEXTS.getStrHelp().length; i++)
-            ToolBox.drawText(g, TEXTS.getStrHelp()[i], fontHeight * 2 * (i + 5), Color.white);
+        for (int i = 0; i < Texts.getStrHelp().length; i++)
+            ToolBox.drawText(g, Texts.getStrHelp()[i], fontHeight * 2 * (i + 5), Color.white);
     }
 
     private void drawHighScoreScreen(Graphics g, int fontHeight) {
-        ToolBox.drawText(g, TEXTS.getStrHighscoreList(), fontHeight * 5, Color.white);
+        ToolBox.drawText(g, Texts.getStrHighscoreList(), fontHeight * 5, Color.white);
 
         Object[] scores = highScores.getHighScores();
         // only first 8 scores
@@ -795,9 +721,9 @@ public final class Game extends Applet implements Runnable {
             ToolBox.drawImage(g, player.image, 40 + i * (player.w + 3), 465, 0);
 
         // draw aliens
-        for (int y = 0; y < aliens.length; y++)
-            for (int x = 0; x < aliens[y].length; x++) {
-                Entity alien = aliens[y][x];
+        for (int y = 0; y < ALIENS.length; y++)
+            for (int x = 0; x < ALIENS[y].length; x++) {
+                Entity alien = ALIENS[y][x];
                 if (alien.visible) {
                     alien.draw(g);
                     if (frameCtr == 0) {
@@ -809,12 +735,12 @@ public final class Game extends Applet implements Runnable {
                 }
             }
 
-        // draw bunkers
-        for (int b = 0; b < bunkers.length; b++)
+        // draw BUNKERS
+        for (int b = 0; b < BUNKERS.length; b++)
             for (int y = 0; y < 4; y++)
                 for (int x = 0; x < 5; x++)
-                    if (bunkers[b][y * 5 + x].visible)
-                        bunkers[b][y * 5 + x].draw(g);
+                    if (BUNKERS[b][y * 5 + x].visible)
+                        BUNKERS[b][y * 5 + x].draw(g);
 
         // draw player
         if (player.visible)
@@ -842,11 +768,11 @@ public final class Game extends Applet implements Runnable {
         drawIngameScreen(g);
 
         if (frameCtr < 250)
-            ToolBox.drawText(g, TEXTS.getStrGameOver(), (int) (4.5 * fontHeight), Color.red);
+            ToolBox.drawText(g, Texts.getStrGameOver(), (int) (4.5 * fontHeight), Color.red);
     }
 
     private void drawInputNameScreen(Graphics g, int fontHeight, int charWidth) {
-        ToolBox.drawText(g, TEXTS.getStrInputname(), fontHeight * 7, Color.white);
+        ToolBox.drawText(g, Texts.getStrInputname(), fontHeight * 7, Color.white);
 
         int strLen = tmpPlayerName.length();
         int x = WIDTH / 2 - charWidth * 4;
@@ -868,21 +794,21 @@ public final class Game extends Applet implements Runnable {
     private void drawPressEnter(Graphics g, int fontHeight) {
         if (frameCtr < 250) {
             if (panel.hasFocus())
-                ToolBox.drawText(g, TEXTS.getStrPressEnter(), HEIGHT - fontHeight / 2, Color.red);
+                ToolBox.drawText(g, Texts.getStrPressEnter(), HEIGHT - fontHeight / 2, Color.red);
             else
-                ToolBox.drawText(g, TEXTS.getStrClickToStart(), HEIGHT - fontHeight / 2, Color.red);
+                ToolBox.drawText(g, Texts.getStrClickToStart(), HEIGHT - fontHeight / 2, Color.red);
         }
     }
 
     private void drawClickToContinue(Graphics g, int height) {
         if (frameCtr < 250)
-            ToolBox.drawText(g, TEXTS.getStrPaused(), HEIGHT - height / 2, Color.red);
+            ToolBox.drawText(g, Texts.getStrPaused(), HEIGHT - height / 2, Color.red);
     }
 
     private void playWalkingSound(long time) {
         int maxAliens = 0;
-        for (int i = 0; i < aliens.length; i++)
-            maxAliens += aliens[i].length;
+        for (int i = 0; i < ALIENS.length; i++)
+            maxAliens += ALIENS[i].length;
 
         float percent = 1.0f - ((float) alienCtr / (float) maxAliens);
         long should = 1000000000L - (long) (percent * 700000000);
@@ -903,7 +829,7 @@ public final class Game extends Applet implements Runnable {
         soundCtr = 0;
         lives1 = /* lives2 = */LIVES;
         ufoCntDown = 15000 + (2000 - (int) (Math.random() * 4000));
-        shot_freq = SPEEDS.getAlienShotFreq();
+        shot_freq = Speeds.getAlienShotFreq();
 
         // --- ufo ---
 
@@ -912,7 +838,7 @@ public final class Game extends Applet implements Runnable {
             ufo.setImage(imagens.getUfoImg(), 3);
             ufo.y = Pos.UFO_Y_POS;
         }
-        ufo.sx = SPEEDS.getUfoSpeed();
+        ufo.sx = Speeds.getUfoSpeed();
         ufo.cntDown = 0;
         ufo.frame = 0;
         ufo.visible = false;
@@ -924,7 +850,7 @@ public final class Game extends Applet implements Runnable {
             player.setImage(imagens.getPlyrImg(), 3);
             player.y = Pos.PLAYER_Y_POS;
         }
-        player.sx = SPEEDS.getPlayerSpeed();
+        player.sx = Speeds.getPlayerSpeed();
         player.cntDown = 0;
         player.frame = 0;
         player.visible = true;
@@ -944,7 +870,7 @@ public final class Game extends Applet implements Runnable {
 
         int dx = imagens.getE1Img().getWidth() / 3 + 4;
 
-        for (int y = 0; y < aliens.length; y++) {
+        for (int y = 0; y < ALIENS.length; y++) {
             BufferedImage image;
             if (y == 0)
                 image = imagens.getE3Img();
@@ -953,12 +879,12 @@ public final class Game extends Applet implements Runnable {
             else
                 image = imagens.getE1Img();
 
-            for (int x = 0; x < aliens[y].length; x++) {
-                Entity alien = aliens[y][x];
+            for (int x = 0; x < ALIENS[y].length; x++) {
+                Entity alien = ALIENS[y][x];
                 if (alien == null) {
                     alien = new Entity();
                     alien.setImage(image, 3);
-                    aliens[y][x] = alien;
+                    ALIENS[y][x] = alien;
                 }
                 alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
                 alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
@@ -967,14 +893,14 @@ public final class Game extends Applet implements Runnable {
             }
         }
 
-        alienCtr = aliens.length * aliens[0].length;
-        alienSX = SPEEDS.getAlienSpeed();
+        alienCtr = ALIENS.length * ALIENS[0].length;
+        alienSX = Speeds.getAlienSpeed();
 
-        // --- bunkers ---
+        // --- BUNKERS ---
 
         final int BUNKER_X = WIDTH / 2 - (7 * (5 * imagens.getLlBnkImg().getWidth() / 3 + 2)) / 2;
 
-        for (int b = 0; b < bunkers.length; b++)
+        for (int b = 0; b < BUNKERS.length; b++)
             for (int y = 0; y < 4; y++)
                 for (int x = 0; x < 5; x++) {
                     BufferedImage img = imagens.getMmBnkImg();
@@ -987,16 +913,16 @@ public final class Game extends Applet implements Runnable {
                     else if (y == 3 && x == 3)
                         img = imagens.getLrBnkImg();
 
-                    Entity e = bunkers[b][y * 5 + x];
+                    Entity e = BUNKERS[b][y * 5 + x];
                     if (e == null) {
                         e = new Entity();
                         e.setImage(img, 3);
-                        bunkers[b][y * 5 + x] = e;
+                        BUNKERS[b][y * 5 + x] = e;
                     }
                     e.x = BUNKER_X + b * 2 * (e.w * 5) + x * e.w;
                     e.y = Pos.BUNKERS_Y_POS + y * e.h;
                     e.frame = 0;
-                    e.visible = (y == 3 && x == 2) ? false : true;
+                    e.visible = y != 3 || x != 2;
                 }
 
         // --- ufo ---
@@ -1014,7 +940,6 @@ public final class Game extends Applet implements Runnable {
             shot.prev = null;
         }
     }
-
 
 
     public void resume() {
