@@ -39,13 +39,6 @@ public final class Game extends Applet implements Runnable {
     private static final int LIVES = 3;
     private static final int FRAMES_PER_IMAGE = 3;
 
-    private static final int BOTTOM_LINE_POS = 462;
-    private static final int PLAYER_Y_POS = 416;
-    private static final int UFO_Y_POS = 75;
-    private static final int ALIENS_X_POS = 68;
-    private static final int ALIENS_Y_POS = 112;
-    private static final int BUNKERS_Y_POS = 368;
-
     private static final NumberFormat NUM_FORMAT = new DecimalFormat("000000");
 
     private HighScores highScores;
@@ -322,8 +315,8 @@ public final class Game extends Applet implements Runnable {
                 for (int y = 0; y < aliens.length; y++)
                     for (int x = 0; x < aliens[y].length; x++) {
                         Entity alien = aliens[y][x];
-                        alien.x = ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
-                        alien.y = ALIENS_Y_POS + y * alien.h * 2;
+                        alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
+                        alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
                         alien.frame = 0;
                         alien.visible = true;
                     }
@@ -628,7 +621,7 @@ public final class Game extends Applet implements Runnable {
                 }
 
             // aliens hit ground ?
-            if (alienMaxY >= BOTTOM_LINE_POS - 1) {
+            if (alienMaxY >= Pos.BOTTOM_LINE_POS - 1) {
                 // game over
                 lives1 = 0; // lives2 = 0;
                 Sound.play(SOUNDS.PLY_HIT);
@@ -745,7 +738,7 @@ public final class Game extends Applet implements Runnable {
             drawPressEnter(g2d, names_height);
 
         if (!Sound.isEnabled())
-            g2d.drawImage(imagens.getSndOffImg(), WIDTH - imagens.getSndOffImg().getWidth() - 1, BOTTOM_LINE_POS + 2, null);
+            g2d.drawImage(imagens.getSndOffImg(), WIDTH - imagens.getSndOffImg().getWidth() - 1, Pos.BOTTOM_LINE_POS + 2, null);
 
         panel.getGraphics().drawImage(imagens.getBackbuffer(), 0, 0, null);
     }
@@ -794,7 +787,7 @@ public final class Game extends Applet implements Runnable {
 
     private void drawIngameScreen(Graphics g) {
         g.setColor(Color.white);
-        g.drawLine(0, BOTTOM_LINE_POS, WIDTH, BOTTOM_LINE_POS);
+        g.drawLine(0, Pos.BOTTOM_LINE_POS, WIDTH, Pos.BOTTOM_LINE_POS);
 
         // draw remaining lifes
         g.drawString("" + lives1, 19, HEIGHT - 1);
@@ -917,7 +910,7 @@ public final class Game extends Applet implements Runnable {
         if (ufo == null) {
             ufo = new Entity();
             ufo.setImage(imagens.getUfoImg(), 3);
-            ufo.y = UFO_Y_POS;
+            ufo.y = Pos.UFO_Y_POS;
         }
         ufo.sx = SPEEDS.getUfoSpeed();
         ufo.cntDown = 0;
@@ -929,7 +922,7 @@ public final class Game extends Applet implements Runnable {
         if (player == null) {
             player = new Entity();
             player.setImage(imagens.getPlyrImg(), 3);
-            player.y = PLAYER_Y_POS;
+            player.y = Pos.PLAYER_Y_POS;
         }
         player.sx = SPEEDS.getPlayerSpeed();
         player.cntDown = 0;
@@ -967,8 +960,8 @@ public final class Game extends Applet implements Runnable {
                     alien.setImage(image, 3);
                     aliens[y][x] = alien;
                 }
-                alien.x = ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
-                alien.y = ALIENS_Y_POS + y * alien.h * 2;
+                alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
+                alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
                 alien.frame = 0;
                 alien.visible = true;
             }
@@ -1001,7 +994,7 @@ public final class Game extends Applet implements Runnable {
                         bunkers[b][y * 5 + x] = e;
                     }
                     e.x = BUNKER_X + b * 2 * (e.w * 5) + x * e.w;
-                    e.y = BUNKERS_Y_POS + y * e.h;
+                    e.y = Pos.BUNKERS_Y_POS + y * e.h;
                     e.frame = 0;
                     e.visible = (y == 3 && x == 2) ? false : true;
                 }
