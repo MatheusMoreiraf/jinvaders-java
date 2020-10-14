@@ -328,26 +328,12 @@ public final class Game extends Applet implements Runnable {
     private void updateExplosions(long time) {
         // player exploding ?
         if (player.frame != 0) {
-            player.cntDown -= 1000 / FRAMES_PER_SECOND;
-            if (player.cntDown < 0) {
-                player.cntDown = 0;
-                player.frame = 0;
-            }
+            imagens.explosionsPlayer(player);
         }
 
         // ufo exploding ?
         if (ufo.visible && ufo.frame != 0) {
-            ufo.cntDown -= 1000 / FRAMES_PER_SECOND;
-            if (ufo.cntDown < 0) {
-                if (ufo.frame == 1) {
-                    ufo.cntDown = 1000;
-                    ufo.frame = 2;
-                } else {
-                    ufo.visible = false;
-                    ufo.frame = 0;
-                    score1 += (int) (Math.random() * 10) * 100;
-                }
-            }
+            imagens.explosionsUfo(ufo, score1);
         }
     }
 
