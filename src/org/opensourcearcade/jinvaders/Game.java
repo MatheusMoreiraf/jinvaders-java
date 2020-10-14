@@ -725,20 +725,8 @@ public final class Game extends Applet implements Runnable {
         ToolBox.drawText(g, Texts.getStrInputname(), fontHeight * 7, Color.white);
 
         int strLen = tmpPlayerName.length();
-        int x = WIDTH / 2 - charWidth * 4;
-        int y = HEIGHT / 2 - fontHeight;
-        for (int i = 0; i < 8; i++) {
-            g.drawLine(x + charWidth * i, y + 2, x + charWidth * (i + 1) - 2, y + 2); // underlines
-            g.drawLine(x + charWidth * i, y + 3, x + charWidth * (i + 1) - 2, y + 3); // underlines
 
-            if (i < strLen)
-                g.drawString(tmpPlayerName.substring(i, i + 1), x + charWidth * i, y);
-        }
-
-        g.setColor(Color.red);
-        g.drawLine(x + charWidth * caretPos, y + 2, x + charWidth * (caretPos + 1) - 2, y + 2); // underlines
-        g.drawLine(x + charWidth * caretPos, y + 3, x + charWidth * (caretPos + 1) - 2, y + 3); // underlines
-        g.setColor(Color.white);
+        Help.inputName(WIDTH, HEIGHT, charWidth, strLen, fontHeight, tmpPlayerName, g, caretPos);
     }
 
     private void drawPressEnter(Graphics g, int fontHeight) {
@@ -816,11 +804,13 @@ public final class Game extends Applet implements Runnable {
         playerShot.x = player.x + player.w / 2 - 1;
         playerShot.y = player.y - 10;
 
+        // --- Aliens ---
         imagens.resetAliens(imagens);
 
         alienCtr = ALIENS.length * ALIENS[0].length;
         alienSX = Speeds.getAlienSpeed();
 
+        // --- Bunkers ---
         imagens.resetBunkers(imagens);
 
         // --- ufo ---

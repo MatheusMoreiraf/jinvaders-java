@@ -1,5 +1,7 @@
 package org.opensourcearcade.jinvaders;
 
+import java.awt.*;
+
 public class Help {
     public int getMostColumn(String direction) {
         int column = direction.equals("Right") ? Integer.MIN_VALUE : Integer.MAX_VALUE;
@@ -21,5 +23,24 @@ public class Help {
                 alienMaxY = (alienY > alienMaxY) ? alienY : alienMaxY;
             }
         }
+    }
+
+    public static void inputName(int width, int height, int charW, int strLen, int h, String tmpPlayerName, Graphics g, int inputCaretPos) {
+        int x = width / 2 - charW * 4;
+        int y = height / 2 - h;
+
+        for (int i = 0; i < 8; i++) {
+            g.drawLine(x + charW * i, y + 2, x + charW * (i + 1) - 2, y + 2); // underlines
+            g.drawLine(x + charW * i, y + 3, x + charW * (i + 1) - 2, y + 3); // underlines
+
+            if (i < strLen)
+                g.drawString(tmpPlayerName.substring(i, i + 1), x + charW * i, y);
+        }
+
+        g.setColor(Color.red);
+        g.drawLine(x + charW * inputCaretPos, y + 2, x + charW * (inputCaretPos + 1) - 2, y + 2); // underlines
+        g.drawLine(x + charW * inputCaretPos, y + 3, x + charW * (inputCaretPos + 1) - 2, y + 3); // underlines
+        g.setColor(Color.white);
+
     }
 }
