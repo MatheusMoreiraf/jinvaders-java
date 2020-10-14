@@ -397,7 +397,7 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateCollisions(long time) {
-        for (int y = 0; y < ALIENS.length && gameState == GameStates.IN_GAME_SCREEN; y++)
+        for (int y = 0; y < ALIENS.length && gameState == GameStates.IN_GAME_SCREEN; y++) {
             for (int x = 0; x < ALIENS[y].length && gameState == GameStates.IN_GAME_SCREEN; x++) {
                 Entity alien = ALIENS[y][x];
                 if (alien.visible && alien.frame < 2) {
@@ -435,18 +435,11 @@ public final class Game extends Applet implements Runnable {
                         continue;
                     } else {
                         // alien ./. bunker
-                        for (int b = 0; b < BUNKERS.length; b++)
-                            for (int yy = 0; yy < 4; yy++)
-                                for (int xx = 0; xx < 5; xx++) {
-                                    Entity bk = BUNKERS[b][yy * 5 + xx];
-                                    if (bk.visible && ToolBox.checkCollision(alien, bk)) {
-                                        bk.visible = false;
-                                        Sound.play(SOUNDS.BASE_HIT);
-                                    }
-                                }
+                        imagens.updateBunkers(alien);
                     }
                 }
             }
+        }
 
         // ufo ./. playershot
         if (ufo.frame < 2 && ufo.visible && playerShot.visible && ToolBox.checkCollision(playerShot, ufo)) {
@@ -478,33 +471,7 @@ public final class Game extends Applet implements Runnable {
             }
 
             // bunker collision checks
-            boolean bnkHit = false;
-            for (int b = 0; b < BUNKERS.length && !bnkHit; b++)
-                for (int yy = 0; yy < 4 && !bnkHit; yy++)
-                    for (int xx = 0; xx < 5 && !bnkHit; xx++) {
-                        Entity bnk = BUNKERS[b][yy * 5 + xx];
-                        if (bnk.visible) {
-                            // alienShot ./. bunker
-                            if (shot.visible && ToolBox.checkCollision(shot, bnk)) {
-                                shot.y = HEIGHT + shot.h;
-                                ++bnk.frame;
-                                if (bnk.frame > 2)
-                                    bnk.visible = false;
-                                bnkHit = true;
-                            }
-                            // playerShot ./. bunker
-                            else if (playerShot.visible && ToolBox.checkCollision(playerShot, bnk)) {
-                                playerShot.visible = false;
-                                ++bnk.frame;
-                                if (bnk.frame > 2)
-                                    bnk.visible = false;
-                                bnkHit = true;
-                            }
-
-                            if (bnkHit)
-                                Sound.play(SOUNDS.BASE_HIT);
-                        }
-                    }
+            imagens.collisionBunkers(shot, playerShot);
 
             shot = shot.prev;
         }
@@ -558,13 +525,13 @@ public final class Game extends Applet implements Runnable {
         {
             float alienMaxY = 0, alienY = 0;
 
-            help.alinesMovement( alienDelta, alienY, alienMaxY, true);
+            help.alinesMovement(alienDelta, alienY, alienMaxY, true);
         } else // bouncing, move aliens downwards
         {
             float alienMaxY = 0, alienY = 0;
             alienSX = (bounce) ? -alienSX : alienSX;
 
-            help.alinesMovement( 10, alienY, alienMaxY, false);
+            help.alinesMovement(10, alienY, alienMaxY, false);
 
             // aliens hit ground ?
             if (alienMaxY >= Pos.BOTTOM_LINE_POS - 1) {
@@ -736,11 +703,7 @@ public final class Game extends Applet implements Runnable {
             }
 
         // draw BUNKERS
-        for (int b = 0; b < BUNKERS.length; b++)
-            for (int y = 0; y < 4; y++)
-                for (int x = 0; x < 5; x++)
-                    if (BUNKERS[b][y * 5 + x].visible)
-                        BUNKERS[b][y * 5 + x].draw(g);
+        imagens.drawBunkers(g);
 
         // draw player
         if (player.visible)
@@ -896,34 +859,7 @@ public final class Game extends Applet implements Runnable {
         alienCtr = ALIENS.length * ALIENS[0].length;
         alienSX = Speeds.getAlienSpeed();
 
-        // --- BUNKERS ---
-
-        final int BUNKER_X = WIDTH / 2 - (7 * (5 * imagens.getLlBnkImg().getWidth() / 3 + 2)) / 2;
-
-        for (int b = 0; b < BUNKERS.length; b++)
-            for (int y = 0; y < 4; y++)
-                for (int x = 0; x < 5; x++) {
-                    BufferedImage img = imagens.getMmBnkImg();
-                    if (y == 0 && x == 0)
-                        img = imagens.getUlBnkImg();
-                    else if (y == 0 && x == 4)
-                        img = imagens.getUrBnkImg();
-                    else if (y == 3 && x == 1)
-                        img = imagens.getLlBnkImg();
-                    else if (y == 3 && x == 3)
-                        img = imagens.getLrBnkImg();
-
-                    Entity e = BUNKERS[b][y * 5 + x];
-                    if (e == null) {
-                        e = new Entity();
-                        e.setImage(img, 3);
-                        BUNKERS[b][y * 5 + x] = e;
-                    }
-                    e.x = BUNKER_X + b * 2 * (e.w * 5) + x * e.w;
-                    e.y = Pos.BUNKERS_Y_POS + y * e.h;
-                    e.frame = 0;
-                    e.visible = y != 3 || x != 2;
-                }
+        imagens.resetBunkers(imagens);
 
         // --- ufo ---
 
