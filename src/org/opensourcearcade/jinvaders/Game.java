@@ -354,6 +354,7 @@ public final class Game extends Applet implements Runnable {
 			gameState = GameStates.SPLASH_SCREEN;
 			return;
 		}
+		
 
 		if (!paused) {
 			updateShooting(time);
