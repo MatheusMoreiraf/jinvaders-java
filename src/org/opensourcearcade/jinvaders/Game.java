@@ -353,18 +353,17 @@ public final class Game extends Applet implements Runnable {
 			gameState = GameStates.SPLASH_SCREEN;
 			return;
 		}
-		
 
 		if (!paused) {
-			updateShooting(time);
+			updateShooting();
 
 			updatePositions(time);
 
-			updateCollisions(time);
+			updateCollisions();
 
-			updateExplosions(time);
+			updateExplosions();
 
-			playWalkingSound(time);
+			playWalkingSound();
 
 			// no more aliens ?
 			if (alienCtr==0) {
@@ -421,7 +420,7 @@ public final class Game extends Applet implements Runnable {
 		}
 	}
 
-	private void updateShooting(long time) {
+	private void updateShooting() {
 
 		Entity shot;
 		if (spaceKey&&spaceKeyReleased&&!playerShot.visible&&player.frame==0) {
@@ -469,7 +468,7 @@ public final class Game extends Applet implements Runnable {
 		}
 	}
 
-	private void updateExplosions(long time) {
+	private void updateExplosions() {
 
 		// player exploding ?
 		if (player.frame!=0) {
@@ -497,7 +496,7 @@ public final class Game extends Applet implements Runnable {
 		}
 	}
 
-	private void updateCollisions(long time) {
+	private void updateCollisions() {
 		for (int y = 0; y<aliens.length&&gameState==GameStates.IN_GAME_SCREEN; y++)
 			for (int x = 0; x<aliens[y].length&&gameState==GameStates.IN_GAME_SCREEN; x++) {
 				Entity alien = aliens[y][x];
@@ -945,7 +944,7 @@ public final class Game extends Applet implements Runnable {
 			ToolBox.drawText(g, STR_PAUSED, HEIGHT-height/2, Color.red);
 	}
 
-	private void playWalkingSound(long time) {
+	private void playWalkingSound() {
 		int maxAliens = 0;
 		for (int i = 0; i<aliens.length; i++)
 			maxAliens += aliens[i].length;
