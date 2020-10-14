@@ -54,7 +54,6 @@ public final class Game extends Applet implements Runnable {
 
 	private GameStates gameState = GameStates.SPLASH_SCREEN;
 
-	private static final int LIVES = 3;
 	private static final int FRAMES_PER_IMAGE = 3;
 
 	// speed in pixels per sec
@@ -968,7 +967,7 @@ public final class Game extends Applet implements Runnable {
 		highscore = highScores.getHighScore();
 		splashScreenTimer = 4000000000L;
 		soundCtr = 0;
-		lives1 = /* lives2 = */LIVES;
+		lives1 = /* lives2 = */3; // numero de vidas
 		ufoCntDown = 15000+(2000-(int) (Math.random()*4000));
 		shot_freq = ALIEN_SHOT_FREQ;
 
