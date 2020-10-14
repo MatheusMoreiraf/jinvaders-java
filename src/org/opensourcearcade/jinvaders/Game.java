@@ -49,7 +49,9 @@ public final class Game extends Applet implements Runnable {
 
     private Graphics2D g2d;
 
-    private Entity player, ufo, playerShot, alienShot;
+    private Entity playerShot, alienShot;
+    private Player player;
+    private Ufo ufo;
 
     private boolean paused;
 
@@ -328,12 +330,12 @@ public final class Game extends Applet implements Runnable {
     private void updateExplosions(long time) {
         // player exploding ?
         if (player.frame != 0) {
-            imagens.explosions(player);
+            player.explosions(player);
         }
 
         // ufo exploding ?
         if (ufo.visible && ufo.frame != 0) {
-            imagens.explosions(ufo, score1);
+            ufo.explosions(ufo, score1);
         }
     }
 
@@ -714,7 +716,7 @@ public final class Game extends Applet implements Runnable {
         // --- ufo ---
 
         if (ufo == null) {
-            ufo = new Entity();
+            ufo = new Ufo();
             ufo.setImage(imagens.getUfoImg(), 3);
             ufo.y = Pos.UFO_Y_POS;
         }
@@ -726,7 +728,7 @@ public final class Game extends Applet implements Runnable {
         // --- player ---
 
         if (player == null) {
-            player = new Entity();
+            player = new Player();
             player.setImage(imagens.getPlyrImg(), 3);
             player.y = Pos.PLAYER_Y_POS;
         }
