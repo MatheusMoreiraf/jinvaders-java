@@ -138,7 +138,7 @@ public class Imagens {
         }
     }
 
-    public void collisionBunkers(Entity shot,Entity playerShot) {
+    public void collisionBunkers(Entity shot, Entity playerShot) {
         boolean bnkHit = false;
         for (int b = 0; b < Game.BUNKERS.length && !bnkHit; b++) {
             for (int yy = 0; yy < 4 && !bnkHit; yy++) {
@@ -166,6 +166,50 @@ public class Imagens {
                             Sound.play(Sound.SOUNDS.BASE_HIT);
                     }
                 }
+            }
+        }
+    }
+
+    // --- ALIENS ---
+    public void drawAliens(long frameCtr, Graphics g) {
+        for (int y = 0; y < Game.ALIENS.length; y++) {
+            for (int x = 0; x < Game.ALIENS[y].length; x++) {
+                Entity alien = Game.ALIENS[y][x];
+                if (alien.visible) {
+                    alien.draw(g);
+                    if (frameCtr == 0) {
+                        if (alien.frame == Game.FRAMES_PER_IMAGE - 1)
+                            alien.visible = false;
+                        else
+                            alien.frame = 1 - alien.frame;
+                    }
+                }
+            }
+        }
+    }
+
+    public void resetAliens(Imagens imagens) {
+        int dx = imagens.getE1Img().getWidth() / 3 + 4;
+        for (int y = 0; y < Game.ALIENS.length; y++) {
+            BufferedImage image;
+            if (y == 0)
+                image = imagens.getE3Img();
+            else if (y < 3)
+                image = imagens.getE2Img();
+            else
+                image = imagens.getE1Img();
+
+            for (int x = 0; x < Game.ALIENS[y].length; x++) {
+                Entity alien = Game.ALIENS[y][x];
+                if (alien == null) {
+                    alien = new Entity();
+                    alien.setImage(image, 3);
+                    Game.ALIENS[y][x] = alien;
+                }
+                alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
+                alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
+                alien.frame = 0;
+                alien.visible = true;
             }
         }
     }

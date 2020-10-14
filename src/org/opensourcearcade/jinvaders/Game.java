@@ -38,11 +38,10 @@ public final class Game extends Applet implements Runnable {
     public static final int FRAMES_PER_SECOND = 30;
     public static final Entity[][] ALIENS = new Entity[5][11];
     public static final Entity[][] BUNKERS = new Entity[4][20];
+    public static final int LIVES = 3;
+    public static final int FRAMES_PER_IMAGE = 3;
 
     private GameStates gameState = GameStates.SPLASH_SCREEN;
-
-    private static final int LIVES = 3;
-    private static final int FRAMES_PER_IMAGE = 3;
 
     private static final NumberFormat NUM_FORMAT = new DecimalFormat("000000");
 
@@ -688,19 +687,7 @@ public final class Game extends Applet implements Runnable {
             ToolBox.drawImage(g, player.image, 40 + i * (player.w + 3), 465, 0);
 
         // draw aliens
-        for (int y = 0; y < ALIENS.length; y++)
-            for (int x = 0; x < ALIENS[y].length; x++) {
-                Entity alien = ALIENS[y][x];
-                if (alien.visible) {
-                    alien.draw(g);
-                    if (frameCtr == 0) {
-                        if (alien.frame == FRAMES_PER_IMAGE - 1)
-                            alien.visible = false;
-                        else
-                            alien.frame = 1 - alien.frame;
-                    }
-                }
-            }
+        imagens.drawAliens(frameCtr, g);
 
         // draw BUNKERS
         imagens.drawBunkers(g);
@@ -829,32 +816,7 @@ public final class Game extends Applet implements Runnable {
         playerShot.x = player.x + player.w / 2 - 1;
         playerShot.y = player.y - 10;
 
-        // --- aliens ---
-
-        int dx = imagens.getE1Img().getWidth() / 3 + 4;
-
-        for (int y = 0; y < ALIENS.length; y++) {
-            BufferedImage image;
-            if (y == 0)
-                image = imagens.getE3Img();
-            else if (y < 3)
-                image = imagens.getE2Img();
-            else
-                image = imagens.getE1Img();
-
-            for (int x = 0; x < ALIENS[y].length; x++) {
-                Entity alien = ALIENS[y][x];
-                if (alien == null) {
-                    alien = new Entity();
-                    alien.setImage(image, 3);
-                    ALIENS[y][x] = alien;
-                }
-                alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
-                alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
-                alien.frame = 0;
-                alien.visible = true;
-            }
-        }
+        imagens.resetAliens(imagens);
 
         alienCtr = ALIENS.length * ALIENS[0].length;
         alienSX = Speeds.getAlienSpeed();
