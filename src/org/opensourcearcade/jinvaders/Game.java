@@ -110,7 +110,6 @@ public final class Game extends Applet implements Runnable {
 
     @Override
     public void init() {
-
         setSize(WIDTH, HEIGHT);
 
         boolean isApplet = (null != System.getSecurityManager());
@@ -128,19 +127,7 @@ public final class Game extends Applet implements Runnable {
 
         try {
             imagens.setImagens();
-
-            Sound.loadSound(SOUNDS.SHOT, ToolBox.getURL("sounds/PlyShot_44.wav"));
-            Sound.loadSound(SOUNDS.PLY_HIT, ToolBox.getURL("sounds/PlyHit_44.wav"));
-            Sound.loadSound(SOUNDS.INV_HIT, ToolBox.getURL("sounds/InvHit_44.wav"));
-            Sound.loadSound(SOUNDS.BASE_HIT, ToolBox.getURL("sounds/BaseHit_44.wav"));
-            Sound.loadSound(SOUNDS.UFO, ToolBox.getURL("sounds/Ufo.wav"));
-            Sound.loadSound(SOUNDS.UFO_HIT, ToolBox.getURL("sounds/UfoHit.wav"));
-            Sound.loadSound(SOUNDS.WALK1, ToolBox.getURL("sounds/Walk1.wav"));
-            Sound.loadSound(SOUNDS.WALK2, ToolBox.getURL("sounds/Walk2.wav"));
-            Sound.loadSound(SOUNDS.WALK3, ToolBox.getURL("sounds/Walk3.wav"));
-            Sound.loadSound(SOUNDS.WALK4, ToolBox.getURL("sounds/Walk4.wav"));
-            Sound.setEnabled(true);
-
+            Sound.init();
             font = ToolBox.loadFont(ToolBox.getURL("ARCADEPI.TTF"));
         } catch (Exception e) {
             System.err.println(e.getLocalizedMessage());
@@ -158,7 +145,6 @@ public final class Game extends Applet implements Runnable {
 
     public void updateGame(long time) {
         // state-dependent updates
-
         switch (gameState) {
             case SPLASH_SCREEN:
                 updateSplashScreen(time);
@@ -189,7 +175,6 @@ public final class Game extends Applet implements Runnable {
         }
 
         // state-independent updates
-
         if (keyboard.getLastKey() == KeyEvent.VK_S) {
             keyboard.setLastKey(0);
             boolean enabled = !Sound.isEnabled();
@@ -199,53 +184,34 @@ public final class Game extends Applet implements Runnable {
         }
     }
 
-    private void updateSplashScreen(long time) {
+    public void updateScreenUtil(GameStates gs, long time) {
         if (keyboard.isEnterKey()) {
             keyboard.setEnterKey(false);
             resetGame();
             gameState = GameStates.IN_GAME_SCREEN;
             return;
         }
-
         splashScreenTimer -= time;
         if (splashScreenTimer <= 0) {
             highscore = highScores.getHighScore();
             splashScreenTimer = 5000000000L;
-            gameState = GameStates.HIGH_SCORE_SCREEN;
+            gameState = gs;
         }
+    }
+
+    private void updateSplashScreen(long time) {
+        updateScreenUtil(GameStates.HIGH_SCORE_SCREEN, time);
     }
 
     private void updateHelpScreen(long time) {
-        if (keyboard.isEnterKey()) {
-            keyboard.setEnterKey(false);
-            resetGame();
-            gameState = GameStates.IN_GAME_SCREEN;
-            return;
-        }
-
-        splashScreenTimer -= time;
-        if (splashScreenTimer <= 0) {
-            highscore = highScores.getHighScore();
-            splashScreenTimer = 5000000000L;
-            gameState = GameStates.SPLASH_SCREEN;
-        }
+        updateScreenUtil(GameStates.SPLASH_SCREEN, time);
     }
 
     private void updateHighScoreScreen(long time) {
-        if (keyboard.isEnterKey()) {
-            keyboard.setEnterKey(false);
-            resetGame();
-            gameState = GameStates.IN_GAME_SCREEN;
-            return;
-        }
-
-        Object[] scores = highScores.getHighScores();
-        highscore = (scores.length > 0) ? Integer.parseInt((String) scores[1]) : 0;
-
-        splashScreenTimer -= time;
-        if (splashScreenTimer <= 0) {
-            splashScreenTimer = 4000000000L;
-            gameState = GameStates.HELP_SCREEN;
+        updateScreenUtil(GameStates.HELP_SCREEN, time);
+        if (!keyboard.isEnterKey()) {
+            Object[] scores = highScores.getHighScores();
+            highscore = (scores.length > 0) ? Integer.parseInt((String) scores[1]) : 0;
         }
     }
 
@@ -271,16 +237,7 @@ public final class Game extends Applet implements Runnable {
             // no more aliens ?
             if (alienCtr == 0) {
                 // create new wave
-                int dx = imagens.getE1Img().getWidth() / 3 + 4;
-                for (int y = 0; y < ALIENS.length; y++)
-                    for (int x = 0; x < ALIENS[y].length; x++) {
-                        Entity alien = ALIENS[y][x];
-                        alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
-                        alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
-                        alien.frame = 0;
-                        alien.visible = true;
-                    }
-
+                imagens.createNewWaveAliens(imagens);
                 // reset alien data
                 alienCtr = ALIENS.length * ALIENS[0].length;
                 --alienSX;
@@ -322,7 +279,6 @@ public final class Game extends Applet implements Runnable {
     }
 
     private void updateShooting(long time) {
-
         Entity shot;
         if (keyboard.isSpaceKey() && keyboard.isSpaceKeyReleased() && !playerShot.visible && player.frame == 0) {
             keyboard.setSpaceKeyReleased(false);

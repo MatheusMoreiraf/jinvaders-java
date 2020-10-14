@@ -43,4 +43,6 @@ public class Help {
         g.setColor(Color.white);
 
     }
+
+
 }

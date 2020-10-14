@@ -188,6 +188,19 @@ public class Imagens {
         }
     }
 
+    public void createNewWaveAliens(Imagens imagens) {
+        int dx = imagens.getE1Img().getWidth() / 3 + 4;
+        for (int y = 0; y < Game.ALIENS.length; y++) {
+            for (int x = 0; x < Game.ALIENS[y].length; x++) {
+                Entity alien = Game.ALIENS[y][x];
+                alien.x = Pos.ALIENS_X_POS + x * dx + (dx / 2 - alien.w / 2);
+                alien.y = Pos.ALIENS_Y_POS + y * alien.h * 2;
+                alien.frame = 0;
+                alien.visible = true;
+            }
+        }
+    }
+
     public void resetAliens(Imagens imagens) {
         int dx = imagens.getE1Img().getWidth() / 3 + 4;
         for (int y = 0; y < Game.ALIENS.length; y++) {
