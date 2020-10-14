@@ -227,7 +227,7 @@ public class Imagens {
         }
     }
 
-    public void explosionsPlayer(Entity player) {
+    public void explosions(Entity player) {
         player.cntDown -= 1000 / Game.FRAMES_PER_SECOND;
         if (player.cntDown < 0) {
             player.cntDown = 0;
@@ -235,7 +235,7 @@ public class Imagens {
         }
     }
 
-    public void explosionsUfo(Entity ufo, int score1) {
+    public void explosions(Entity ufo, int score1) {
         ufo.cntDown -= 1000 / Game.FRAMES_PER_SECOND;
         if (ufo.cntDown < 0) {
             if (ufo.frame == 1) {
