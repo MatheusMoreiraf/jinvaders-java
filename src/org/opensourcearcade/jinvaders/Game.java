@@ -382,11 +382,7 @@ public final class Game extends Applet implements Runnable {
 
         // ufo ./. playershot
         if (ufo.frame < 2 && ufo.visible && playerShot.visible && ToolBox.checkCollision(playerShot, ufo)) {
-            ufo.frame = 1;
-            ufo.cntDown = 1000;
-            playerShot.visible = false;
-            Sound.stop(SOUNDS.UFO);
-            Sound.play(SOUNDS.UFO_HIT);
+            ufo.collisionPlayerShot(ufo, playerShot);
         }
 
         Entity shot = alienShot;

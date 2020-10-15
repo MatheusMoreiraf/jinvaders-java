@@ -29,4 +29,12 @@ public class Ufo extends Entity {
             }
         }
     }
+
+    public void collisionPlayerShot(Ufo ufo, Entity playerShot) {
+        ufo.frame = 1;
+        ufo.cntDown = 1000;
+        playerShot.visible = false;
+        Sound.stop(Sound.SOUNDS.UFO);
+        Sound.play(Sound.SOUNDS.UFO_HIT);
+    }
 }
