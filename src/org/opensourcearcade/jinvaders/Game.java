@@ -363,14 +363,7 @@ public final class Game extends Applet implements Runnable {
                     }
                     // player ./. alien
                     else if (player.frame == 0 && player.visible && ToolBox.checkCollision(player, alien)) {
-                        Sound.play(SOUNDS.PLY_HIT);
-                        Sound.play(SOUNDS.INV_HIT);
-                        --alienCtr;
-                        alien.frame = FRAMES_PER_IMAGE - 1;
-
-                        player.dx = 0;
-                        player.frame = 1;
-                        player.cntDown = 2000;
+                        player.collisionAlien(alien, player, alienCtr);
                         if (--lives1 == 0) {
                             gameState = GameStates.GAME_OVER_SCREEN;
                             if (ufo.visible) {
