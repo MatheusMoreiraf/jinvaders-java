@@ -1,7 +1,9 @@
 package org.opensourcearcade.jinvaders;
 
 import org.opensourcearcade.jinvaders.Sound.SOUNDS;
-import org.opensourcearcade.jinvaders.entities.*;
+import org.opensourcearcade.jinvaders.entities.Entity;
+import org.opensourcearcade.jinvaders.entities.Player;
+import org.opensourcearcade.jinvaders.entities.Ufo;
 
 import java.applet.Applet;
 import java.awt.*;
@@ -438,24 +440,7 @@ public final class Game extends Applet implements Runnable {
             player.x -= player.dx;
 
         // --- ufo ---
-        if (ufo.visible) {
-            if (ufo.frame == 0) {
-                float delta = ufo.sx * (time / 1000000000.0f);
-                if (ufo.x > WIDTH) {
-                    ufo.visible = false;
-                    Sound.stop(SOUNDS.UFO);
-                } else
-                    ufo.x += delta;
-            }
-        } else {
-            ufoCntDown -= 1000 / FRAMES_PER_SECOND;
-            if (ufoCntDown < 0) {
-                ufo.x = -ufo.image.getWidth(null);
-                ufo.visible = true;
-                ufoCntDown = 15000 + (2000 - (int) (Math.random() * 4000));
-                Sound.loop(SOUNDS.UFO);
-            }
-        }
+        ufo.updatePosition(ufo, time, ufoCntDown);
 
         // --- aliens ---
         float alienDelta = 2 * alienSX * (time / 1000000000.0f); // pixels

@@ -62,7 +62,7 @@ public final class Sound {
 		loadSound(SOUNDS.WALK2, ToolBox.getURL("sounds/Walk2.wav"));
 		loadSound(SOUNDS.WALK3, ToolBox.getURL("sounds/Walk3.wav"));
 		loadSound(SOUNDS.WALK4, ToolBox.getURL("sounds/Walk4.wav"));
-		setEnabled(true);
+		setEnabled(false);
 	}
 
 	public static boolean isEnabled() {
