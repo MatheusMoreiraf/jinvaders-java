@@ -469,7 +469,7 @@ public final class Game extends Applet implements Runnable {
 		}
 	}
 
-	private void updateExplosions(long time) {
+	private void updateExplosions() {
 
 		// player exploding ?
 		if (player.frame!=0) {
