@@ -360,11 +360,7 @@ public final class Game extends Applet implements Runnable {
                     else if (player.frame == 0 && player.visible && ToolBox.checkCollision(player, alien)) {
                         player.collisionAlien(alien, player, alienCtr);
                         if (--lives1 == 0) {
-                            gameState = GameStates.GAME_OVER_SCREEN;
-                            if (ufo.visible) {
-                                Sound.stop(SOUNDS.UFO);
-                                ufo.visible = false;
-                            }
+                            gameOver();
                         }
                         continue;
                     } else {
@@ -386,11 +382,7 @@ public final class Game extends Applet implements Runnable {
             if (player.frame == 0 && shot.visible && ToolBox.checkCollision(shot, player)) {
                 ufo.collisionAlienShot(player, shot);
                 if (--lives1 == 0) {
-                    gameState = GameStates.GAME_OVER_SCREEN;
-                    if (ufo.visible) {
-                        Sound.stop(SOUNDS.UFO);
-                        ufo.visible = false;
-                    }
+                    gameOver();
                 }
                 break;
             }
@@ -459,11 +451,7 @@ public final class Game extends Applet implements Runnable {
                 player.dx = 0;
                 player.frame = 1;
                 player.cntDown = 2000;
-                gameState = GameStates.GAME_OVER_SCREEN;
-                if (ufo.visible) {
-                    Sound.stop(SOUNDS.UFO);
-                    ufo.visible = false;
-                }
+                gameOver();
             }
         }
 
@@ -748,6 +736,13 @@ public final class Game extends Applet implements Runnable {
         }
     }
 
+    public void gameOver() {
+        gameState = GameStates.GAME_OVER_SCREEN;
+        if (ufo.visible) {
+            Sound.stop(SOUNDS.UFO);
+            ufo.visible = false;
+        }
+    }
 
     public void resume() {
         paused = false;
