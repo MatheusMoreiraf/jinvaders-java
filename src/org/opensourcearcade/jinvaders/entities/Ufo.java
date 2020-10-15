@@ -47,4 +47,14 @@ public class Ufo extends Entity {
         Sound.stop(Sound.SOUNDS.UFO);
         Sound.play(Sound.SOUNDS.UFO_HIT);
     }
+
+
+    public void collisionAlienShot(Player player, Entity shot) {
+        shot.y = Game.HEIGHT + shot.h;
+
+        Sound.play(Sound.SOUNDS.PLY_HIT);
+        player.dx = 0;
+        player.frame = 1;
+        player.cntDown = 2000;
+    }
 }
