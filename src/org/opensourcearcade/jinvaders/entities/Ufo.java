@@ -18,23 +18,14 @@ public class Ufo extends Entity {
         }
     }
 
-    public void updatePosition(Ufo ufo, long time, int ufoCntDown) {
-        if (ufo.visible) {
-            if (ufo.frame == 0) {
-                float delta = ufo.sx * (time / 1000000000.0f);
-                if (ufo.x > Game.WIDTH) {
-                    ufo.visible = false;
-                    Sound.stop(Sound.SOUNDS.UFO);
-                } else
-                    ufo.x += delta;
-            }
-        } else {
-            ufoCntDown -= 1000 / Game.FRAMES_PER_SECOND;
-            if (ufoCntDown < 0) {
-                ufo.x = -ufo.image.getWidth(null);
-                ufo.visible = true;
-                ufoCntDown = 15000 + (2000 - (int) (Math.random() * 4000));
-                Sound.loop(Sound.SOUNDS.UFO);
+    public void updatePosition(Ufo ufo, long time) {
+        if (ufo.frame == 0) {
+            float delta = ufo.sx * (time / 1000000000.0f);
+            if (ufo.x > Game.WIDTH) {
+                ufo.visible = false;
+                Sound.stop(Sound.SOUNDS.UFO);
+            } else {
+                ufo.x += delta;
             }
         }
     }

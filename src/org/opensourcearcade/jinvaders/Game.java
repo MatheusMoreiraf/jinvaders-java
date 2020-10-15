@@ -440,7 +440,17 @@ public final class Game extends Applet implements Runnable {
             player.x -= player.dx;
 
         // --- ufo ---
-        ufo.updatePosition(ufo, time, ufoCntDown);
+        if (ufo.visible) {
+            ufo.updatePosition(ufo, time);
+        } else {
+            ufoCntDown -= 1000 / FRAMES_PER_SECOND;
+            if (ufoCntDown < 0) {
+                ufo.x = -ufo.image.getWidth(null);
+                ufo.visible = true;
+                ufoCntDown = 15000 + (2000 - (int) (Math.random() * 4000));
+                Sound.loop(SOUNDS.UFO);
+            }
+        }
 
         // --- aliens ---
         float alienDelta = 2 * alienSX * (time / 1000000000.0f); // pixels
