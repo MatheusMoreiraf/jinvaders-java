@@ -1,7 +1,9 @@
 package org.opensourcearcade.jinvaders.entities;
 
 import org.opensourcearcade.jinvaders.Game;
+import org.opensourcearcade.jinvaders.Imagens;
 import org.opensourcearcade.jinvaders.Sound;
+import org.opensourcearcade.jinvaders.Speeds;
 
 public class Player extends Entity {
     private Entity playerShot;
@@ -38,5 +40,21 @@ public class Player extends Entity {
         --alienCtr;
         alien.frame = Game.FRAMES_PER_IMAGE - 1;
         player.getPlayerShot().visible = false;
+    }
+
+    public void reset(Imagens imagens) {
+        this.sx = Speeds.getPlayerSpeed();
+        this.cntDown = 0;
+        this.frame = 0;
+        this.visible = true;
+        this.x = Game.WIDTH / 2 - imagens.getPlyrImg().getWidth() / 2;
+        // --- player shot ---
+        if (this.getPlayerShot() == null) {
+            this.setPlayerShot(new Entity());
+            this.getPlayerShot().w = 2;
+            this.getPlayerShot().h = 8;
+        }
+        this.getPlayerShot().x = this.x + this.w / 2 - 1;
+        this.getPlayerShot().y = this.y - 10;
     }
 }

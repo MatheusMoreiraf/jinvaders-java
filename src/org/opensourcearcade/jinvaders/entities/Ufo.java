@@ -2,6 +2,7 @@ package org.opensourcearcade.jinvaders.entities;
 
 import org.opensourcearcade.jinvaders.Game;
 import org.opensourcearcade.jinvaders.Sound;
+import org.opensourcearcade.jinvaders.Speeds;
 
 public class Ufo extends Entity {
     private Entity alienShot;
@@ -12,6 +13,13 @@ public class Ufo extends Entity {
 
     public void setAlienShot(Entity alienShot) {
         this.alienShot = alienShot;
+    }
+
+    public void reset() {
+        this.sx = Speeds.getUfoSpeed();
+        this.cntDown = 0;
+        this.frame = 0;
+        this.visible = false;
     }
 
     public void explosions(Entity ufo, int score1) {

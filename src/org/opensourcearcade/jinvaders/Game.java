@@ -677,16 +677,12 @@ public final class Game extends Applet implements Runnable {
         shot_freq = Speeds.getAlienShotFreq();
 
         // --- ufo ---
-
         if (ufo == null) {
             ufo = new Ufo();
             ufo.setImage(imagens.getUfoImg(), 3);
             ufo.y = Pos.UFO_Y_POS;
         }
-        ufo.sx = Speeds.getUfoSpeed();
-        ufo.cntDown = 0;
-        ufo.frame = 0;
-        ufo.visible = false;
+        ufo.reset();
 
         // --- player ---
 
@@ -695,21 +691,7 @@ public final class Game extends Applet implements Runnable {
             player.setImage(imagens.getPlyrImg(), 3);
             player.y = Pos.PLAYER_Y_POS;
         }
-        player.sx = Speeds.getPlayerSpeed();
-        player.cntDown = 0;
-        player.frame = 0;
-        player.visible = true;
-        player.x = WIDTH / 2 - imagens.getPlyrImg().getWidth() / 2;
-
-        // --- player shot ---
-
-        if (player.getPlayerShot() == null) {
-            player.setPlayerShot(new Entity());
-            player.getPlayerShot().w = 2;
-            player.getPlayerShot().h = 8;
-        }
-        player.getPlayerShot().x = player.x + player.w / 2 - 1;
-        player.getPlayerShot().y = player.y - 10;
+        player.reset(imagens);
 
         // --- Aliens ---
         imagens.resetAliens(imagens);
@@ -721,12 +703,10 @@ public final class Game extends Applet implements Runnable {
         imagens.resetBunkers(imagens);
 
         // --- ufo ---
-
         ufo.visible = false;
         Sound.stop(SOUNDS.UFO);
 
         // --- shots ---
-
         player.getPlayerShot().visible = false;
 
         while (ufo.getAlienShot() != null) {
