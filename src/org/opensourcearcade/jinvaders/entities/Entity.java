@@ -1,17 +1,17 @@
-package org.opensourcearcade.jinvaders;
+package org.opensourcearcade.jinvaders.entities;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 public class Entity
 {
-	protected BufferedImage image;
+	public BufferedImage image;
 
-	protected float x, y, dx, dy, sx, sy;
-	protected boolean visible = true;
-	protected int frame, w, h;
-	protected long cntDown;
-	protected Entity prev;
+	public float x, y, dx, dy, sx, sy;
+	public boolean visible = true;
+	public int frame, w, h;
+	public long cntDown;
+	public Entity prev;
 
 	public void setImage(BufferedImage image, int frames)
 	{

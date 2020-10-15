@@ -1,4 +1,6 @@
-package org.opensourcearcade.jinvaders;
+package org.opensourcearcade.jinvaders.entities;
+
+import org.opensourcearcade.jinvaders.Game;
 
 public class Ufo extends Entity {
     public void explosions(Entity ufo, int score1) {

@@ -1,5 +1,7 @@
 package org.opensourcearcade.jinvaders;
 
+import org.opensourcearcade.jinvaders.entities.Entity;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;

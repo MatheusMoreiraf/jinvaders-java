@@ -1,5 +1,7 @@
 package org.opensourcearcade.jinvaders;
 
+import org.opensourcearcade.jinvaders.entities.Entity;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -20,7 +22,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 public final class ToolBox {
-	
+
 	public static final String RES_DIR = "/res/";
 
 	public static final ToolBox SELF = new ToolBox();
@@ -31,7 +33,7 @@ public final class ToolBox {
 			throw new FileNotFoundException(RES_DIR+path);
 		return url;
 	}
-	
+
 	public static boolean createHomeDirectory() {
 
 		if (runningAsApplet()) return false;
@@ -189,7 +191,7 @@ public final class ToolBox {
 		String pkg = SELF.getClass().getPackage().getName();
 		return pkg.substring(pkg.lastIndexOf('.')+1);
 	}
-	
+
 	public static boolean runningAsApplet()
 	{
 		return System.getSecurityManager()!=null;
