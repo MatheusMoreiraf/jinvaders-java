@@ -30,10 +30,10 @@ public class Ufo extends Entity {
         }
     }
 
-    public void collisionPlayerShot(Ufo ufo, Entity playerShot) {
+    public void collisionPlayerShot(Ufo ufo, Player player) {
         ufo.frame = 1;
         ufo.cntDown = 1000;
-        playerShot.visible = false;
+        player.getPlayerShot().visible = false;
         Sound.stop(Sound.SOUNDS.UFO);
         Sound.play(Sound.SOUNDS.UFO_HIT);
     }

@@ -52,7 +52,7 @@ public final class Game extends Applet implements Runnable {
 
     private Graphics2D g2d;
 
-    private Entity playerShot, alienShot;
+    private Entity alienShot;
     private Player player;
     private Ufo ufo;
 
@@ -285,18 +285,18 @@ public final class Game extends Applet implements Runnable {
 
     private void updateShooting(long time) {
         Entity shot;
-        if (keyboard.isSpaceKey() && keyboard.isSpaceKeyReleased() && !playerShot.visible && player.frame == 0) {
+        if (keyboard.isSpaceKey() && keyboard.isSpaceKeyReleased() && !player.getPlayerShot().visible && player.frame == 0) {
             keyboard.setSpaceKeyReleased(false);
             long t = System.nanoTime();
             if (t - lastShotTime > 300000) {
                 lastShotTime = t;
                 Sound.play(SOUNDS.SHOT);
-                playerShot = new Entity();
-                playerShot.x = player.x + player.w / 2 - 1;
-                playerShot.y = player.y - 10;
-                playerShot.w = 2;
-                playerShot.h = 8;
-                playerShot.sy = -(Math.round(10.0f * (float) Speeds.getPlayerShotSpeed() / (float) FRAMES_PER_SECOND)) / 10.0f;
+                player.setPlayerShot(new Entity());
+                player.getPlayerShot().x = player.x + player.w / 2 - 1;
+                player.getPlayerShot().y = player.y - 10;
+                player.getPlayerShot().w = 2;
+                player.getPlayerShot().h = 8;
+                player.getPlayerShot().sy = -(Math.round(10.0f * (float) Speeds.getPlayerShotSpeed() / (float) FRAMES_PER_SECOND)) / 10.0f;
             }
         }
 
@@ -348,11 +348,11 @@ public final class Game extends Applet implements Runnable {
                 Entity alien = ALIENS[y][x];
                 if (alien.visible && alien.frame < 2) {
                     // alien ./. playershot
-                    if (playerShot.visible && ToolBox.checkCollision(playerShot, alien)) {
+                    if (player.getPlayerShot().visible && ToolBox.checkCollision(player.getPlayerShot(), alien)) {
                         Sound.play(SOUNDS.INV_HIT);
                         --alienCtr;
                         alien.frame = FRAMES_PER_IMAGE - 1;
-                        playerShot.visible = false;
+                        player.getPlayerShot().visible = false;
 
                         if (alien.image == imagens.getE1Img())
                             score1 += 10;
@@ -381,8 +381,8 @@ public final class Game extends Applet implements Runnable {
         }
 
         // ufo ./. playershot
-        if (ufo.frame < 2 && ufo.visible && playerShot.visible && ToolBox.checkCollision(playerShot, ufo)) {
-            ufo.collisionPlayerShot(ufo, playerShot);
+        if (ufo.frame < 2 && ufo.visible && player.getPlayerShot().visible && ToolBox.checkCollision(player.getPlayerShot(), ufo)) {
+            ufo.collisionPlayerShot(ufo, player);
         }
 
         Entity shot = alienShot;
@@ -406,7 +406,7 @@ public final class Game extends Applet implements Runnable {
             }
 
             // bunker collision checks
-            imagens.collisionBunkers(shot, playerShot);
+            imagens.collisionBunkers(shot, player);
 
             shot = shot.prev;
         }
@@ -477,10 +477,10 @@ public final class Game extends Applet implements Runnable {
             }
         }
 
-        if (playerShot != null) {
-            playerShot.y += playerShot.sy;
-            if (playerShot.y < -10)
-                playerShot.visible = false;
+        if (player.getPlayerShot() != null) {
+            player.getPlayerShot().y += player.getPlayerShot().sy;
+            if (player.getPlayerShot().y < -10)
+                player.getPlayerShot().visible = false;
         }
 
         Entity shot = alienShot;
@@ -632,8 +632,8 @@ public final class Game extends Applet implements Runnable {
             ufo.draw(g);
 
         // draw player shot
-        if (playerShot.visible)
-            g.fillRect((int) playerShot.x, (int) playerShot.y, playerShot.w, playerShot.h);
+        if (player.getPlayerShot().visible)
+            g.fillRect((int) player.getPlayerShot().x, (int) player.getPlayerShot().y, player.getPlayerShot().w, player.getPlayerShot().h);
 
         // draw all alien shots
         Entity shot = alienShot;
@@ -725,13 +725,13 @@ public final class Game extends Applet implements Runnable {
 
         // --- player shot ---
 
-        if (playerShot == null) {
-            playerShot = new Entity();
-            playerShot.w = 2;
-            playerShot.h = 8;
+        if (player.getPlayerShot() == null) {
+            player.setPlayerShot(new Entity());
+            player.getPlayerShot().w = 2;
+            player.getPlayerShot().h = 8;
         }
-        playerShot.x = player.x + player.w / 2 - 1;
-        playerShot.y = player.y - 10;
+        player.getPlayerShot().x = player.x + player.w / 2 - 1;
+        player.getPlayerShot().y = player.y - 10;
 
         // --- Aliens ---
         imagens.resetAliens(imagens);
@@ -749,7 +749,7 @@ public final class Game extends Applet implements Runnable {
 
         // --- shots ---
 
-        playerShot.visible = false;
+        player.getPlayerShot().visible = false;
 
         while (alienShot != null) {
             Entity shot = alienShot;

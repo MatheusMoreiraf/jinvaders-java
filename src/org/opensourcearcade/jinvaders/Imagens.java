@@ -1,6 +1,7 @@
 package org.opensourcearcade.jinvaders;
 
 import org.opensourcearcade.jinvaders.entities.Entity;
+import org.opensourcearcade.jinvaders.entities.Player;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -140,7 +141,7 @@ public class Imagens {
         }
     }
 
-    public void collisionBunkers(Entity shot, Entity playerShot) {
+    public void collisionBunkers(Entity shot, Player player) {
         boolean bnkHit = false;
         for (int b = 0; b < Game.BUNKERS.length && !bnkHit; b++) {
             for (int yy = 0; yy < 4 && !bnkHit; yy++) {
@@ -156,8 +157,8 @@ public class Imagens {
                             bnkHit = true;
                         }
                         // playerShot ./. bunker
-                        else if (playerShot.visible && ToolBox.checkCollision(playerShot, bnk)) {
-                            playerShot.visible = false;
+                        else if (player.getPlayerShot().visible && ToolBox.checkCollision(player.getPlayerShot(), bnk)) {
+                            player.getPlayerShot().visible = false;
                             ++bnk.frame;
                             if (bnk.frame > 2)
                                 bnk.visible = false;

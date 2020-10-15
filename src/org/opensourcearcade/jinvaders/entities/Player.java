@@ -4,6 +4,16 @@ import org.opensourcearcade.jinvaders.Game;
 import org.opensourcearcade.jinvaders.Sound;
 
 public class Player extends Entity {
+    private Entity playerShot;
+
+    public Entity getPlayerShot() {
+        return playerShot;
+    }
+
+    public void setPlayerShot(Entity playerShot) {
+        this.playerShot = playerShot;
+    }
+
     public void explosions(Player player) {
         player.cntDown -= 1000 / Game.FRAMES_PER_SECOND;
         if (player.cntDown < 0) {
