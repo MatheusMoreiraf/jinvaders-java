@@ -52,7 +52,7 @@ public final class Game extends Applet implements Runnable {
 
     private Graphics2D g2d;
 
-    private Entity alienShot;
+
     private Player player;
     private Ufo ufo;
 
@@ -319,11 +319,11 @@ public final class Game extends Applet implements Runnable {
             shot.h = 8;
             shot.sy = (Math.round(10.0f * (float) Speeds.getAlienShotSpeed() / (float) FRAMES_PER_SECOND)) / 10.0f;
 
-            if (alienShot == null)
-                alienShot = shot;
+            if (ufo.getAlienShot() == null)
+                ufo.setAlienShot(shot);
             else {
-                shot.prev = alienShot;
-                alienShot = shot;
+                shot.prev = ufo.getAlienShot();
+                ufo.setAlienShot(shot);
             }
 
             shootCtr = 0;
@@ -385,7 +385,7 @@ public final class Game extends Applet implements Runnable {
             ufo.collisionPlayerShot(ufo, player);
         }
 
-        Entity shot = alienShot;
+        Entity shot = ufo.getAlienShot();
         while (shot != null) {
             // alienShot ./. player
             if (player.frame == 0 && shot.visible && ToolBox.checkCollision(shot, player)) {
@@ -483,7 +483,7 @@ public final class Game extends Applet implements Runnable {
                 player.getPlayerShot().visible = false;
         }
 
-        Entity shot = alienShot;
+        Entity shot = ufo.getAlienShot();
         while (null != shot) {
             shot.y += shot.sy;
             if (shot.prev != null && shot.prev.y > HEIGHT)
@@ -636,7 +636,7 @@ public final class Game extends Applet implements Runnable {
             g.fillRect((int) player.getPlayerShot().x, (int) player.getPlayerShot().y, player.getPlayerShot().w, player.getPlayerShot().h);
 
         // draw all alien shots
-        Entity shot = alienShot;
+        Entity shot = ufo.getAlienShot();
         while (null != shot) {
             g.fillRect((int) shot.x, (int) shot.y, 2, 8);
             shot = shot.prev;
@@ -751,9 +751,9 @@ public final class Game extends Applet implements Runnable {
 
         player.getPlayerShot().visible = false;
 
-        while (alienShot != null) {
-            Entity shot = alienShot;
-            alienShot = shot.prev;
+        while (ufo.getAlienShot() != null) {
+            Entity shot = ufo.getAlienShot();
+            ufo.setAlienShot(shot.prev);
             shot.prev = null;
         }
     }

@@ -4,6 +4,16 @@ import org.opensourcearcade.jinvaders.Game;
 import org.opensourcearcade.jinvaders.Sound;
 
 public class Ufo extends Entity {
+    private Entity alienShot;
+
+    public Entity getAlienShot() {
+        return alienShot;
+    }
+
+    public void setAlienShot(Entity alienShot) {
+        this.alienShot = alienShot;
+    }
+
     public void explosions(Entity ufo, int score1) {
         ufo.cntDown -= 1000 / Game.FRAMES_PER_SECOND;
         if (ufo.cntDown < 0) {
