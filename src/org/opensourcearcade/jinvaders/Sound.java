@@ -43,12 +43,17 @@ public final class Sound {
 	}
 
 	public static void setEnabled(boolean enabled) {
+		System.out.println("teste");
 		Sound.enabled = enabled;
 
 		if (!enabled) {
 			for (int i = 0; i<clips.length; i++)
 				if (clips[i]!=null) clips[i].stop();
 		}
+	}
+
+	public static boolean isEnabled() {
+		return enabled;
 	}
 
 	static void init() throws FileNotFoundException {
@@ -62,10 +67,6 @@ public final class Sound {
 		loadSound(SOUNDS.WALK2, ToolBox.getURL("sounds/Walk2.wav"));
 		loadSound(SOUNDS.WALK3, ToolBox.getURL("sounds/Walk3.wav"));
 		loadSound(SOUNDS.WALK4, ToolBox.getURL("sounds/Walk4.wav"));
-		setEnabled(false);
-	}
-
-	public static boolean isEnabled() {
-		return enabled;
+		setEnabled(true);
 	}
 }

@@ -179,7 +179,7 @@ public final class Game extends Applet implements Runnable {
         }
 
         // state-independent updates
-        if (keyboard.getLastKey() == KeyEvent.VK_S) {
+        if (keyboard.getLastKey() == KeyEvent.VK_M) {
             keyboard.setLastKey(0);
             boolean enabled = !Sound.isEnabled();
             Sound.setEnabled(enabled);
