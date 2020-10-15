@@ -348,7 +348,7 @@ public final class Game extends Applet implements Runnable {
                 if (alien.visible && alien.frame < 2) {
                     // alien ./. playershot
                     if (player.getPlayerShot().visible && ToolBox.checkCollision(player.getPlayerShot(), alien)) {
-                        player.collisionPlayerShot(alien, player, alienCtr);
+                        alienCtr = player.collisionPlayerShot(alien, player, alienCtr);
                         if (alien.image == imagens.getE1Img())
                             score1 += 10;
                         else if (alien.image == imagens.getE2Img())

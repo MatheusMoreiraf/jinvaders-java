@@ -35,11 +35,13 @@ public class Player extends Entity {
         player.cntDown = 2000;
     }
 
-    public void collisionPlayerShot(Entity alien, Player player, int alienCtr) {
+    public int collisionPlayerShot(Entity alien, Player player, int alienCtr) {
         Sound.play(Sound.SOUNDS.INV_HIT);
         --alienCtr;
         alien.frame = Game.FRAMES_PER_IMAGE - 1;
         player.getPlayerShot().visible = false;
+
+        return alienCtr;
     }
 
     public void reset(Imagens imagens) {
