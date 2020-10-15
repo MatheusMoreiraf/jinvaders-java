@@ -15,7 +15,7 @@ public class Help {
         return column;
     }
 
-    public void alinesMovement(float alienDelta, float alienY, float alienMaxY, boolean eixoX) {
+    public float alinesMovement(float alienDelta, float alienY, float alienMaxY, boolean eixoX) {
         for (int y = 0; y < Game.ALIENS.length; y++) {
             for (int x = 0; x < Game.ALIENS[y].length; x++) {
                 Entity alien = Game.ALIENS[y][x];
@@ -25,6 +25,7 @@ public class Help {
                 alienMaxY = (alienY > alienMaxY) ? alienY : alienMaxY;
             }
         }
+        return alienMaxY;
     }
 
     public static void inputName(int width, int height, int charW, int strLen, int h, String tmpPlayerName, Graphics g, int inputCaretPos) {

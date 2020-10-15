@@ -435,13 +435,13 @@ public final class Game extends Applet implements Runnable {
         {
             float alienMaxY = 0, alienY = 0;
 
-            help.alinesMovement(alienDelta, alienY, alienMaxY, true);
+            alienMaxY = help.alinesMovement(alienDelta, alienY, alienMaxY, true);
         } else // bouncing, move aliens downwards
         {
             float alienMaxY = 0, alienY = 0;
             alienSX = (bounce) ? -alienSX : alienSX;
 
-            help.alinesMovement(10, alienY, alienMaxY, false);
+            alienMaxY = help.alinesMovement(10, alienY, alienMaxY, false);
 
             // aliens hit ground ?
             if (alienMaxY >= Pos.BOTTOM_LINE_POS - 1) {

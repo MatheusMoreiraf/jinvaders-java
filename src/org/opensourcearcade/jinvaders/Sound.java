@@ -43,7 +43,6 @@ public final class Sound {
 	}
 
 	public static void setEnabled(boolean enabled) {
-		System.out.println("teste");
 		Sound.enabled = enabled;
 
 		if (!enabled) {
